@@ -97,6 +97,96 @@ function generateHourlyData() {
   return hours;
 }
 
+// 도시별 Mock 데이터 생성 함수
+function generateMockDataForCity(query: string): WeatherData {
+  const cityMockData = { ...mockWeatherData };
+  const lowerQuery = query.toLowerCase();
+  
+  // 도시별 기본 정보와 날씨 패턴 설정
+  const cityData: Record<string, { name: string; country: string; temp: number; condition: string; code: number; humidity: number; windKph: number }> = {
+    // 한국 도시들
+    'seoul': { name: 'Seoul', country: 'South Korea', temp: 22, condition: 'Partly cloudy', code: 1003, humidity: 65, windKph: 10.8 },
+    'busan': { name: 'Busan', country: 'South Korea', temp: 24, condition: 'Clear', code: 1000, humidity: 70, windKph: 12.3 },
+    'incheon': { name: 'Incheon', country: 'South Korea', temp: 21, condition: 'Cloudy', code: 1006, humidity: 68, windKph: 9.5 },
+    'daegu': { name: 'Daegu', country: 'South Korea', temp: 25, condition: 'Sunny', code: 1000, humidity: 60, windKph: 8.2 },
+    'daejeon': { name: 'Daejeon', country: 'South Korea', temp: 23, condition: 'Partly cloudy', code: 1003, humidity: 63, windKph: 11.1 },
+    'gwangju': { name: 'Gwangju', country: 'South Korea', temp: 26, condition: 'Clear', code: 1000, humidity: 58, windKph: 7.8 },
+    
+    // 일본 도시들
+    'tokyo': { name: 'Tokyo', country: 'Japan', temp: 26, condition: 'Clear', code: 1000, humidity: 72, windKph: 13.5 },
+    'osaka': { name: 'Osaka', country: 'Japan', temp: 27, condition: 'Partly cloudy', code: 1003, humidity: 75, windKph: 11.8 },
+    'kyoto': { name: 'Kyoto', country: 'Japan', temp: 25, condition: 'Cloudy', code: 1006, humidity: 78, windKph: 9.2 },
+    'yokohama': { name: 'Yokohama', country: 'Japan', temp: 26, condition: 'Clear', code: 1000, humidity: 73, windKph: 12.7 },
+    
+    // 중국 도시들
+    'beijing': { name: 'Beijing', country: 'China', temp: 28, condition: 'Hazy', code: 1030, humidity: 45, windKph: 15.2 },
+    'shanghai': { name: 'Shanghai', country: 'China', temp: 29, condition: 'Partly cloudy', code: 1003, humidity: 80, windKph: 14.1 },
+    'guangzhou': { name: 'Guangzhou', country: 'China', temp: 32, condition: 'Hot', code: 1000, humidity: 85, windKph: 8.9 },
+    
+    // 미국 도시들
+    'new york': { name: 'New York', country: 'United States', temp: 20, condition: 'Light rain', code: 1063, humidity: 82, windKph: 16.4 },
+    'los angeles': { name: 'Los Angeles', country: 'United States', temp: 24, condition: 'Sunny', code: 1000, humidity: 55, windKph: 7.3 },
+    'chicago': { name: 'Chicago', country: 'United States', temp: 18, condition: 'Overcast', code: 1009, humidity: 75, windKph: 19.2 },
+    'miami': { name: 'Miami', country: 'United States', temp: 30, condition: 'Partly cloudy', code: 1003, humidity: 88, windKph: 12.1 },
+    'san francisco': { name: 'San Francisco', country: 'United States', temp: 16, condition: 'Fog', code: 1135, humidity: 90, windKph: 13.8 },
+    
+    // 유럽 도시들
+    'london': { name: 'London', country: 'United Kingdom', temp: 15, condition: 'Light rain', code: 1063, humidity: 85, windKph: 14.7 },
+    'paris': { name: 'Paris', country: 'France', temp: 19, condition: 'Cloudy', code: 1006, humidity: 68, windKph: 11.3 },
+    'berlin': { name: 'Berlin', country: 'Germany', temp: 17, condition: 'Overcast', code: 1009, humidity: 72, windKph: 12.9 },
+    'madrid': { name: 'Madrid', country: 'Spain', temp: 27, condition: 'Sunny', code: 1000, humidity: 42, windKph: 8.5 },
+    'rome': { name: 'Rome', country: 'Italy', temp: 25, condition: 'Clear', code: 1000, humidity: 58, windKph: 9.7 },
+    
+    // 동남아시아 도시들
+    'bangkok': { name: 'Bangkok', country: 'Thailand', temp: 33, condition: 'Hot', code: 1000, humidity: 78, windKph: 6.2 },
+    'singapore': { name: 'Singapore', country: 'Singapore', temp: 31, condition: 'Thundery outbreaks possible', code: 1087, humidity: 84, windKph: 8.1 },
+    'kuala lumpur': { name: 'Kuala Lumpur', country: 'Malaysia', temp: 32, condition: 'Partly cloudy', code: 1003, humidity: 82, windKph: 7.4 },
+    'jakarta': { name: 'Jakarta', country: 'Indonesia', temp: 30, condition: 'Heavy rain', code: 1195, humidity: 89, windKph: 5.8 },
+    
+    // 기타 주요 도시들
+    'sydney': { name: 'Sydney', country: 'Australia', temp: 21, condition: 'Partly cloudy', code: 1003, humidity: 65, windKph: 18.3 },
+    'dubai': { name: 'Dubai', country: 'United Arab Emirates', temp: 38, condition: 'Sunny', code: 1000, humidity: 35, windKph: 12.6 },
+    'mumbai': { name: 'Mumbai', country: 'India', temp: 29, condition: 'Monsoon rain', code: 1201, humidity: 92, windKph: 22.1 }
+  };
+  
+  // 도시 찾기
+  let cityInfo = null;
+  for (const [key, value] of Object.entries(cityData)) {
+    if (lowerQuery.includes(key) || key.includes(lowerQuery)) {
+      cityInfo = value;
+      break;
+    }
+  }
+  
+  // 도시를 찾지 못한 경우, 기본값으로 Seoul 사용하되 이름만 변경
+  if (!cityInfo) {
+    cityInfo = { 
+      name: query, 
+      country: 'Unknown', 
+      temp: 20 + Math.floor(Math.random() * 15), 
+      condition: 'Partly cloudy', 
+      code: 1003, 
+      humidity: 60 + Math.floor(Math.random() * 30),
+      windKph: 5 + Math.floor(Math.random() * 15)
+    };
+  }
+  
+  // Mock 데이터 업데이트
+  cityMockData.location.name = cityInfo.name;
+  cityMockData.location.country = cityInfo.country;
+  cityMockData.current.temp_c = cityInfo.temp;
+  cityMockData.current.temp_f = Math.round(cityInfo.temp * 9/5 + 32);
+  cityMockData.current.condition.text = cityInfo.condition;
+  cityMockData.current.condition.code = cityInfo.code;
+  cityMockData.current.humidity = cityInfo.humidity;
+  cityMockData.current.wind_kph = cityInfo.windKph;
+  cityMockData.current.wind_mph = Math.round(cityInfo.windKph * 0.621371);
+  cityMockData.current.feels_like_c = cityInfo.temp + Math.floor(Math.random() * 4) - 2;
+  cityMockData.current.feels_like_f = Math.round(cityMockData.current.feels_like_c * 9/5 + 32);
+  
+  return cityMockData;
+}
+
 export const weatherApi = {
   getCurrentWeather: async (query: string): Promise<WeatherData> => {
     try {
@@ -111,28 +201,13 @@ export const weatherApi = {
       // Mock 데이터 반환 (데모용)
       await new Promise(resolve => setTimeout(resolve, 1000)); // 로딩 시뮬레이션
       
-      // 쿼리에 따른 mock 데이터 변경
-      const mockData = { ...mockWeatherData };
-      if (query.toLowerCase().includes('tokyo')) {
-        mockData.location.name = 'Tokyo';
-        mockData.location.country = 'Japan';
-        mockData.current.temp_c = 26;
-      } else if (query.toLowerCase().includes('new york')) {
-        mockData.location.name = 'New York';
-        mockData.location.country = 'United States';
-        mockData.current.temp_c = 20;
-      } else if (query.toLowerCase().includes('london')) {
-        mockData.location.name = 'London';
-        mockData.location.country = 'United Kingdom';
-        mockData.current.temp_c = 15;
-        mockData.current.condition.text = 'Light rain';
-        mockData.current.condition.code = 296;
-      }
+      // 쿼리에 따른 mock 데이터 생성
+      const mockData = generateMockDataForCity(query);
       
       return mockData;
     } catch (error) {
       console.error('Weather API error:', error);
-      throw new Error('날씨 정보를 가져오는데 실패했습니다.');
+      throw new Error(`${query}의 날씨 정보를 찾을 수 없습니다. 다른 도시명을 시도해보세요.`);
     }
   },
 
